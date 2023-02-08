@@ -57,9 +57,9 @@ sap.ui.define([
 			}.bind(this));
 			this.getLoggedInUserDetail();
 			oPromise.then(function(){
-				this.salesHdrData.salesOrg = this.ATR01;
-				this.salesHdrData.DistChan = this.ATR02;
-				this.salesHdrData.division = this.ATR03;
+				this.salesHdrData.salesOrg = this.salesOrgDataAccess;
+				this.salesHdrData.DistChan = this.distrChannelDataAccess;
+				this.salesHdrData.division = this.divisionDataAccess;
 				this.SalesHdrModel.refresh();
 			}.bind(this));
 		},
