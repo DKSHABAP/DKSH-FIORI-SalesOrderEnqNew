@@ -52,7 +52,16 @@ sap.ui.define([
 			this.SalesHdrModel = new sap.ui.model.json.JSONModel(this.salesHdrData);
 			this.getView().setModel(this.SalesHdrModel, "SaleHdrModelSet");
 			this.allAccess = true;
+			var oPromise = new Promise(function(fnResolve){
+				this._fnRightsPromise = fnResolve;
+			}.bind(this));
 			this.getLoggedInUserDetail();
+			oPromise.then(function(){
+				this.salesHdrData.salesOrg = this.ATR01;
+				this.salesHdrData.DistChan = this.ATR02;
+				this.salesHdrData.division = this.ATR03;
+				this.SalesHdrModel.refresh();
+			}.bind(this));
 		},
 		_onRouteMatched: function () {
 
@@ -112,9 +121,11 @@ sap.ui.define([
 					if (data.status == 409)
 						that.allAccess = false;
 					else
-						sap.m.MessageBox.error(thes.getView().getModel("i18n").getProperty("retrieveDetails"));
+						sap.m.MessageBox.error(that.getView().getModel("i18n").getProperty("retrieveDetails"));
 				},
-				complete: function (data) {}
+				complete: function (data) {
+					that._fnRightsPromise();
+				}
 			});
 		},
 		/*function to call scim service to get the user details*/
@@ -1148,11 +1159,11 @@ sap.ui.define([
 						// 	sap.m.MessageBox.information(this.getView().getModel("i18n").getProperty("enterFilterSearch"));
 						// 	return false;
 						// } else {
-							filters.push(new sap.ui.model.Filter("billingNumber", sap.ui.model.FilterOperator.EQ, filterData.billingNumber));
-							// //----STRY0017413
-							// filters.push(new sap.ui.model.Filter("distChnl", sap.ui.model.FilterOperator.EQ, filterData.DistChan));
-							// filters.push(new sap.ui.model.Filter("division", sap.ui.model.FilterOperator.EQ, filterData.division));
-							// filters.push(new sap.ui.model.Filter("salesOrg", sap.ui.model.FilterOperator.EQ, filterData.salesOrg));
+						filters.push(new sap.ui.model.Filter("billingNumber", sap.ui.model.FilterOperator.EQ, filterData.billingNumber));
+						// //----STRY0017413
+						// filters.push(new sap.ui.model.Filter("distChnl", sap.ui.model.FilterOperator.EQ, filterData.DistChan));
+						// filters.push(new sap.ui.model.Filter("division", sap.ui.model.FilterOperator.EQ, filterData.division));
+						// filters.push(new sap.ui.model.Filter("salesOrg", sap.ui.model.FilterOperator.EQ, filterData.salesOrg));
 						// }
 						// [+]End Modification - STRY0017413 Invoice Search Enhancement
 					}
@@ -1163,7 +1174,7 @@ sap.ui.define([
 						// 	sap.m.MessageBox.information(this.getView().getModel("i18n").getProperty("enterPOSearch"));
 						// 	return false;
 						// } else {
-							filters.push(new sap.ui.model.Filter("PONo", sap.ui.model.FilterOperator.EQ, filterData.PONo));
+						filters.push(new sap.ui.model.Filter("PONo", sap.ui.model.FilterOperator.EQ, filterData.PONo));
 						// }
 					}
 					// [+]End Modification - STRY0017627 Customer PO Number Search
